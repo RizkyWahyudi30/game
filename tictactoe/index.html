@@ -8,20 +8,52 @@
   </head>
   <body>
     <!-- Section: Judul -->
-    <div id="header">
-      <header class="title">Game Tic Tac Toe</header>
-      <p>
-        permainan papan kertas klasik untuk dua pemain yang menggunakan kotak
-        berukuran 3×3
-      </p>
-      <!-- button reset -->
-      <button id="reset-button"></button>
+    <div class="header">
+      <header class="title">
+        <h1>Game Tic Tac Toe</h1>
+        <p>
+          permainan papan kertas klasik untuk dua pemain yang menggunakan kotak
+          berukuran 3×3
+        </p>
+      </header>
     </div>
 
     <!-- Section: Gameplay -->
-    <div id="gameplay"></div>
+    <div class="gameplay">
+      <!-- button reset -->
+      <button id="reset-button">Reset</button>
+
+      <!-- Papan game -->
+      <div id="kotak-game"></div>
+
+      <!-- info game: giliran dan timer -->
+      <div class="info-game">
+        <!-- giliran pemain -->
+        <p>Giliran: <span id="antrian-pemain"></span></p>
+
+        <!-- atur waktu -->
+        <div class="waktu">
+          <label for="opsi-waktu">Durasi game:</label>
+          <select id="opsi-waktu">
+            <option value="20" selected>20 detik</option>
+            <option value="15">15 detik</option>
+            <option value="10">10 detik</option>
+          </select>
+
+          <!-- sisa waktu -->
+          <p>Sisa waktu: <span id="sisa-waktu"></span></p>
+        </div>
+      </div>
+
+      <button id="button-mulai">Mulai Game</button>
+
+      <!-- hitung round ke berapa -->
+      <p>Ronde Game: <span id="ronde"></span></p>
+    </div>
 
     <!-- Section: History -->
-    <div id="history-game"></div>
+    <div class="history-game"></div>
+
+    <script src="main.js" type="module"></script>
   </body>
 </html>
