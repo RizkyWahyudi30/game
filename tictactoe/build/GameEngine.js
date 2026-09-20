@@ -9,6 +9,7 @@ export default class GameEngine extends EventEmitter {
   #sisaWaktu = 0;
   #timerId = null;
   #ronde = 1;
+  #riwayat = [];
 
   get papan() {
     return [...this.#papan]; // return copy, bukan reference asli
@@ -28,6 +29,10 @@ export default class GameEngine extends EventEmitter {
 
   get rondeSaatIni() {
     return this.#ronde;
+  }
+
+  get riwayat() {
+    return [...this.#riwayat];
   }
 
   mulai(durasiDetik) {
@@ -54,14 +59,28 @@ export default class GameEngine extends EventEmitter {
     }, 1000);
   }
 
-  #habisWaktu() {
+  #selesaikanRonde(alasan, pemenang = null) {
     clearInterval(this.#timerId);
+
+    this.#riwayat.push({
+      papan: this.papan,
+      ronde: this.#ronde,
+      alasan,
+      pemenang,
+    });
 
     this.#ronde++;
     this.#status = "selesai";
     this.emit("statusBerubah", { status: this.#status });
-    this.emit("gameBerakhir", { alasan: "waktu habis" });
+    this.emit("rondeBerubah", { ronde: this.#ronde });
+    this.emit("gameBerakhir", { alasan, pemenang });
+    this.emit("riwayatBerubah", { riwayat: this.#riwayat });
+
     return;
+  }
+
+  #habisWaktu() {
+    this.#selesaikanRonde("Waktu habis");
   }
 
   klikKotak(index) {
@@ -73,18 +92,13 @@ export default class GameEngine extends EventEmitter {
 
     const pemenang = this.#cekPemenang();
     if (pemenang) {
-      clearInterval(this.#timerId);
-      this.#status = "selesai";
-      this.emit("statusBerubah", { status: this.#status });
-      this.emit("gameBerakhir", { alasan: "menang", pemenang });
+      this.#selesaikanRonde("menang", pemenang);
       return;
     }
 
     if (this.#papan.every((cell) => cell !== "")) {
-      clearInterval(this.#timerId);
-      this.status = "selesai";
-      this.emit("statusBerubah", { status: this.#status });
-      this.emit("gameBerakhir", { alasan: "seri" });
+      this.#selesaikanRonde("seri");
+      return;
     }
 
     this.#pemainSaatIni = this.#pemainSaatIni === "X" ? "O" : "X";
@@ -117,18 +131,24 @@ export default class GameEngine extends EventEmitter {
     return null;
   }
 
-  reset() {
+  resetArena() {
     clearInterval(this.#timerId);
     this.#papan = Array(9).fill("");
     this.#pemainSaatIni = "X";
     this.#status = "idle";
     this.#sisaWaktu = 0;
-    this.#ronde = 1;
 
     this.emit("papanBerubah", { papan: this.papan });
     this.emit("giliranBerubah", { pemain: this.#pemainSaatIni });
     this.emit("statusBerubah", { status: this.#status });
     this.emit("waktuBerubah", { sisaWaktu: this.#sisaWaktu });
+  }
+
+  resetTotal() {
+    this.resetArena();
+    this.#ronde = 1;
+    this.#riwayat = [];
     this.emit("rondeBerubah", { ronde: this.#ronde });
+    this.emit("riwayatBerubah", { riwayat: this.#riwayat });
   }
 }
