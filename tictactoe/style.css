@@ -74,10 +74,11 @@ body {
 
 #history-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
-  gap: 6px;
+  gap: 16px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .riwayat-kartu {
@@ -85,7 +86,8 @@ body {
   text-align: center;
   border-radius: 6px;
   font-size: 13px;
-  flex: 1;
+  /* flex: 1; */
+  width: fit-content;
 }
 
 .mini-papan {
@@ -98,6 +100,7 @@ body {
 
 .mini-cell {
   border: 1px solid #999;
+  width: 30px;
   height: 30px;
   aspect-ratio: 1 / 1;
   display: flex;
