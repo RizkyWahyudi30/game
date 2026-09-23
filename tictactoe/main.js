@@ -1,13 +1,20 @@
 import GameEngine from "./build/GameEngine.js";
-import { renderPapan, renderGiliran, renderWaktu } from "./ui/render.js";
+import {
+  renderPapan,
+  renderGiliran,
+  renderWaktu,
+  renderRiwayat,
+} from "./ui/render.js";
 
 const game = new GameEngine();
+const riwayatContainer = document.getElementById("history-container");
 
 const papanContainer = document.getElementById("kotak-game");
 const giliranPemain = document.getElementById("antrian-pemain");
 const waktuHabis = document.getElementById("sisa-waktu");
 const opsiWaktu = document.getElementById("opsi-waktu");
-const resetButton = document.getElementById("reset-button");
+const resetArena = document.getElementById("reset-arena");
+const resetTotal = document.getElementById("reset-total");
 const mulaiButton = document.getElementById("button-mulai");
 
 game.on("papanBerubah", ({ papan }) => renderPapan(papan, papanContainer));
@@ -27,20 +34,17 @@ game.on("gameBerakhir", (data) => {
     }
   }, 100);
 });
-// game.on("rondeBerubah", ({ ronde }) => {
-//   document.getElementById("ronde").textContent =
-//     `Ronde Game: ${ronde} / ${GameEngine.MAKS_RONDE}`;
-// });
+game.on("rondeBerubah", ({ ronde }) => {
+  const tampilkanRonde = Math.min(ronde, GameEngine.MAKS_RONDE);
+  document.getElementById("ronde").textContent =
+    `${tampilkanRonde} / ${GameEngine.MAKS_RONDE}`;
+});
 game.on("batasRonde", () => {
   alert(`Sudah mencapai 3 ronde! Silahkan tekan reset untuk main lagi!`);
 });
-
-// saat user pilih waktu, langsung mulai
-// opsiWaktu.addEventListener("change", (e) => {
-//   console.log("Durasi pilih", e.target.value);
-//   const durasi = Number(e.target.value);
-//   game.mulai(durasi);
-// });
+game.on("riwayatBerubah", ({ riwayat }) =>
+  renderRiwayat(riwayat, riwayatContainer),
+);
 
 // event delegation di papan -- SATU LISTENER UNTUK 9 KOTAK
 papanContainer.addEventListener("click", (e) => {
@@ -53,14 +57,16 @@ papanContainer.addEventListener("click", (e) => {
 });
 
 // tombol reset
-resetButton.addEventListener("click", () => {
-  game.reset();
+resetArena.addEventListener("click", () => {
+  game.resetArena();
+});
+resetTotal.addEventListener("click", () => {
+  game.resetTotal();
   opsiWaktu.value = "20";
 });
 
-mulaiButton.addEventListener("click", (e) => {
-  console.log("Durasi pilih", e.target.value);
-  const durasi = Number(e.target.value);
+mulaiButton.addEventListener("click", () => {
+  const durasi = Number(opsiWaktu.value);
   game.mulai(durasi);
 });
 
@@ -68,4 +74,4 @@ mulaiButton.addEventListener("click", (e) => {
 renderPapan(game.papan, papanContainer);
 renderGiliran(game.pemainSaatIni, giliranPemain);
 document.getElementById("ronde").textContent =
-  `Ronde Game: ${ronde} / ${GameEngine.MAKS_RONDE}`;
+  `${game.rondeSaatIni} / ${GameEngine.MAKS_RONDE}`;
